@@ -11,7 +11,7 @@ export type AppState = {
   messages: Message[]; // 对话历史
   input: string; // 当前输入内容
   isRequesting: boolean; // 是否正在请求接口
-  isStreaming: boolean; // 是否正在流式响应
+  isVisible: boolean; // 是否正在流式响应
 };
 
 export type AppActions = {
@@ -20,7 +20,7 @@ export type AppActions = {
   updateAssistantMessage: (content: string) => void; // 更新AI消息
   clearMessages: () => void; // 清空消息
   setRequesting: (isRequesting: boolean) => void;
-  setStreaming: (isStreaming: boolean) => void;
+  setVisible: (isVisible: boolean) => void;
 };
 
 export type AppStore = AppState & AppActions;
@@ -29,7 +29,7 @@ export const defaultInitState: AppState = {
   messages: [],
   input: "",
   isRequesting: false,
-  isStreaming: false,
+  isVisible: true,
 };
 
 export const initAppStore = (): AppState => {
@@ -80,22 +80,14 @@ export const createAppStore = (initState: AppState = defaultInitState) => {
       set(
         produce((draft: AppState) => {
           draft.isRequesting = isRequesting;
-          // 如果停止请求，也停止流式响应
-          if (!isRequesting) {
-            draft.isStreaming = false;
-          }
         })
       );
     },
     // 设置流式响应状态
-    setStreaming: (isStreaming) => {
+    setVisible: (isVisible) => {
       set(
         produce((draft: AppState) => {
-          draft.isStreaming = isStreaming;
-          // 如果开始流式响应，也设置请求状态
-          if (isStreaming) {
-            draft.isRequesting = true;
-          }
+          draft.isVisible = isVisible;
         })
       );
     },

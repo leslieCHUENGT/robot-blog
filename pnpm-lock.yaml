@@ -68,6 +68,9 @@ importers:
       js-cookie:
         specifier: ^3.0.5
         version: 3.0.5
+      lucide:
+        specifier: ^0.525.0
+        version: 0.525.0
       lucide-react:
         specifier: ^0.483.0
         version: 0.483.0(react@19.0.0)
@@ -2650,6 +2653,9 @@ packages:
     resolution: {integrity: sha512-WldsY17Qb/T3VZdMnVQ9C3DDIP7h1ViDTHVdVGnLZcvHNg30zH/MTQ04RTORjexoGmpsXroiQXZ4QyR0kBy0FA==}
     peerDependencies:
       react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
+
+  lucide@0.525.0:
+    resolution: {integrity: sha512-sfehWlaE/7NVkcEQ4T9JD3eID8RNMIGJBBUq9wF3UFiJIrcMKRbU3g1KGfDk4svcW7yw8BtDLXaXo02scDtUYQ==}
 
   markdown-extensions@2.0.0:
     resolution: {integrity: sha512-o5vL7aDWatOTX8LzaS1WMoaoxIiLRQJuIKKe2wAw6IeULDHaqbiqiggmx+pKvZDb1Sj+pE46Sn1T7lCqfFtg1Q==}
@@ -6464,6 +6470,8 @@ snapshots:
   lucide-react@0.483.0(react@19.0.0):
     dependencies:
       react: 19.0.0
+
+  lucide@0.525.0: {}
 
   markdown-extensions@2.0.0: {}
 

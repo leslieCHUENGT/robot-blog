@@ -20,6 +20,7 @@ export const ChatInput = ({ value, onChange, onSubmit, loading }: ChatInputProps
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
               onSubmit();
+              onChange('');
             }
           }}
           placeholder="您有什么想问我的吗？"

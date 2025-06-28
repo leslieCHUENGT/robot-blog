@@ -182,7 +182,6 @@ body {
 
   --tag-bg: #333333;
 
-
   --md-theme-color: #9d4edd;
   --md-theme-color-light: #c39bd3;
   --md-theme-color-dark: #7b2cbf;
@@ -245,7 +244,6 @@ body {
   animation-play-state: paused;
 }
 
-
 @keyframes scroll-right-to-left {
   0% {
     transform: translateX(0);
@@ -263,7 +261,6 @@ body {
   animation: scroll-right-to-left 30s linear infinite;
 }
 
-
 .animate-scroll-right-to-left:hover {
   animation-play-state: paused;
 }
@@ -277,5 +274,22 @@ body {
   .no-scrollbar {
     -ms-overflow-style: none; /* IE 和 Edge */
     scrollbar-width: none; /* Firefox */
+  }
+}
+
+.theme-switcher-active--pinks {
+  animation: pulse-pinks 2s infinite;
+}
+
+/* 其他 pulse 动画保持不变 */
+@keyframes pulse-pinks {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 158, 181, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 158, 181, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 158, 181, 0);
   }
 }

@@ -1,4 +1,5 @@
 import Footer from '@/components/layout/footer';
+import RobotPage from '@/components/robot';
 
 export default async function HeaderNavLayout({
   children
@@ -8,6 +9,7 @@ export default async function HeaderNavLayout({
   return (
     <div className="bg-background relative mx-auto flex min-h-screen flex-col px-5 xl:max-w-[1200px]">
       {children}
+      <RobotPage />
       <Footer />
     </div>
   );

@@ -4,7 +4,6 @@ import Hero from '@/components/home/hero';
 import CategoryList from '@/components/home/category-list';
 import { getPostManager } from '@/lib/docs-manager';
 import { appConfig } from '@/app-config';
-import RobotPage from '@/components/robot';
 
 // 强制页面使用静态生成
 // export const dynamic = 'force-static';
@@ -25,7 +24,6 @@ export default async function Home() {
       <Hero />
       <FeaturedPosts posts={featuredPosts} />
       <CategoryList categories={categories} />
-      <RobotPage/>
     </>
   );
 }

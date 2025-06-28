@@ -24,7 +24,7 @@ export const ChatContainer = ({ messages }: ChatContainerProps) => {
   return (
     <div
       ref={chatContainerRef}
-      className="no-scrollbar flex h-100 w-full flex-col overflow-auto">
+      className="no-scrollbar flex h-120 w-full flex-col overflow-auto">
       {/* 这里假设 MessageList 已经修改 */}
       <MessageList messages={messages} />
     </div>

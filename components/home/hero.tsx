@@ -1,16 +1,34 @@
+'use client';
+
 import Image from 'next/image';
 import { cn } from '@/lib';
 import Link from 'next/link';
 import { appConfig } from '@/app-config';
+import { useFullAIApiStore } from '@/context/app-provider';
 
 const BTN_CLASS = `px-6 py-3 rounded-3xl font-semibold 
    inline-flex items-center justify-center gap-2 transition-all duration-300 
    hover:text-white hover:shadow-card-hover hover:translate-y-[-2px]
    `;
 const Hero = () => {
+  const { isVisible } = useFullAIApiStore();
+
   return (
-    <div className="flex flex-col items-center justify-between gap-10 py-16 lg:flex-row">
-      <div className="flex flex-1 flex-col items-center justify-center lg:items-start lg:justify-start">
+    <div
+      className={cn(
+        'flex h-160 flex-col items-center gap-10 py-16 lg:flex-row',
+        !isVisible && 'h-80'
+      )}>
+      <div className="flex justify-end">
+        <Image
+          src={appConfig.me.avatar}
+          width={200}
+          height={200}
+          alt="Leslie的秘密基地"
+          className="animate-float max-w-60 rounded-3xl"
+        />
+      </div>
+      <div className="flex flex-col items-center justify-center lg:items-start lg:justify-start">
         <h2 className="text-text mb-5 text-3xl font-bold md:text-[2.5rem]">
           {appConfig.greeting.text}{' '}
           <span className="text-primary after:bg-primary after:border-radius-[3px] relative after:absolute after:bottom-[-5px] after:left-0 after:h-[3px] after:w-full after:content-['']">
@@ -38,15 +56,6 @@ const Hero = () => {
             关于我
           </a>
         </div>
-      </div>
-      <div className="flex flex-1 justify-end">
-        <Image
-          src={appConfig.me.avatar}
-          width={200}
-          height={200}
-          alt="Leslie的秘密基地"
-          className="animate-float max-w-60 rounded-3xl"
-        />
       </div>
     </div>
   );

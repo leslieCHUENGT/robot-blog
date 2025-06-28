@@ -11,7 +11,7 @@ export const MessageList = ({ messages }: { messages: Message[] }) => {
   if (messages.length === 0) {
     return (
       <div className="flex h-full items-center justify-center text-2xl font-bold">
-        {`Hi, I'm an AI robot.`}
+        {`我知道他的很多事情，可以来问我哦~`}
       </div>
     );
   }
