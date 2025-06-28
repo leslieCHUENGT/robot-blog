@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 
 # 主要站点地图
-Sitemap: https:/shunlin.online/sitemap.xml
+Sitemap: https:/Leslie.online/sitemap.xml
 
 # 禁止访问某些路径 (根据需要调整)
 Disallow: /api/

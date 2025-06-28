@@ -1,8 +1,9 @@
 import { useRef, useEffect } from 'react';
 import { MessageList } from './message-list';
+import type { Message } from '@/context/app-store';
 
 interface ChatContainerProps {
-  messages: any[];
+  messages: Message[];
 }
 
 export const ChatContainer = ({ messages }: ChatContainerProps) => {
@@ -23,7 +24,7 @@ export const ChatContainer = ({ messages }: ChatContainerProps) => {
   return (
     <div
       ref={chatContainerRef}
-      className="flex h-100 w-full flex-col overflow-auto no-scrollbar">
+      className="no-scrollbar flex h-100 w-full flex-col overflow-auto">
       {/* 这里假设 MessageList 已经修改 */}
       <MessageList messages={messages} />
     </div>

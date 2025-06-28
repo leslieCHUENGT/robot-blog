@@ -12,7 +12,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'shunlin-blog-1306235438.cos.ap-guangzhou.myqcloud.com',
+        hostname: 'Leslie-blog-1306235438.cos.ap-guangzhou.myqcloud.com',
         port: '',
         pathname: '/**'
       }

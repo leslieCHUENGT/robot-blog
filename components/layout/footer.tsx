@@ -18,7 +18,7 @@ export default function Footer() {
                 className="w-12 rounded-xl md:w-16 md:rounded-2xl lg:max-w-20"
               />
               <span className="text-primary after:bg-primary relative text-xl font-bold after:absolute after:bottom-[-3px] after:left-0 after:h-[2px] after:w-full after:content-[''] md:text-2xl md:after:bottom-[-5px] md:after:h-[3px] lg:text-3xl">
-                ShunLin
+                Leslie
               </span>
             </div>
             <div className="text-center text-sm sm:text-left md:text-base">

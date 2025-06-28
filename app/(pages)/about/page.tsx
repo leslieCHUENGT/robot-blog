@@ -13,8 +13,7 @@ export const dynamic = 'force-static';
 // 可选：添加生成元数据
 export const metadata = {
   title: '关于我 | ' + appConfig.title,
-  description:
-    '菜鸡前端开发工程师一枚，抽象大师，轻度二刺螈。五条人、罗大佑、伍佰的忠实歌迷。正在练习电吉他🎸(不想玩抽象的电吉他选手不是好程序员)。'
+  description: '喜欢数学。'
 };
 export default function About() {
   return (
@@ -23,9 +22,6 @@ export default function About() {
       <div className="py-14">
         <div className="mb-10 text-center">
           <h1 className="text-text mb-3.5 text-[2.5rem] font-bold">关于我</h1>
-          <p className="text-text-secondary mx-auto my-0 max-w-[700px] text-[1.1rem]">
-            问题出现我再告诉大家！
-          </p>
         </div>
 
         <div className="mb-16 flex flex-col items-center justify-center gap-10 lg:flex-row">
@@ -34,23 +30,9 @@ export default function About() {
           </div>
           <div className="max-w-xl">
             <h2 className="text-text mb-4 text-3xl font-bold">{appConfig.me.name}</h2>
+            <p className="text-text-secondary mb-6">喜欢摇滚🎸，喜欢数学、喜欢js，相信LLM会改变世界！！！ </p>
             <p className="text-text-secondary mb-6">
-              菜鸡前端开发工程师一枚，抽象大师，轻度二刺螈。五条人、罗大佑、伍佰的忠实歌迷。正在练习电吉他🎸(不想玩抽象的电吉他选手不是好程序员)。
-            </p>
-            <p className="text-text-secondary mb-6">
-              目前主要使用的技术栈包括React、Next.js、Node.js和TypeScript。我相信技术应该服务于创造价值，而不仅仅是为了技术而技术(👈这句话是copilot帮我写的)。
-            </p>
-            <h3 className="text-text/90 mb-4 text-2xl font-bold">关于这个网站</h3>
-            <p className="text-text-secondary mb-6">
-              由于是《孤独摇滚》的动漫粉所以开发的时候用主角团+贝斯老姐(暗夜模式)的代表色来配置主题。使用的是Next.js+本地文件系统管理Markdown的形式来搭建。
-              <br />
-              <br />
-              这里有我搭建个人博客的心路历程,如果你刚好无聊没事干可以看看(不建议专门沐浴更衣再来看🫡):
-              <Link
-                className="text-primary hover:underline"
-                href="/articles/buiding-blog-thingking">
-                搭建个人博客的经历和思考
-              </Link>
+              目前主要使用的技术栈包括Vue、Node.js、TypeScript、React、Next.js
             </p>
 
             <div className="flex flex-wrap gap-4">

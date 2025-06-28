@@ -14,7 +14,7 @@ export const MarkdownItProcess = (initialMarkdown: string) => {
     return self.renderToken(tokens, idx, options);
   };
 
-  md.renderer.rules.table_open = (tokens, idx, options, env, self) => {
+  md.renderer.rules.table_open = (tokens: any, idx: number, options: any, env: any, self: any) => {
     // 在表格前插入 <div className="table-container">
     return (
       '<div className="table-container">\n' +
@@ -22,19 +22,19 @@ export const MarkdownItProcess = (initialMarkdown: string) => {
     );
   };
 
-  md.renderer.rules.table_close = (tokens, idx, options, env, self) => {
+  md.renderer.rules.table_close = (tokens: any, idx: number, options: any, env: any, self: any) => {
     // 在表格后插入 </div>
     return defaultRender(tokens, idx, options, env, self) + "</div>\n";
   };
 
-  md.renderer.rules.fence = (tokens, idx, options, env, self) => {
+  md.renderer.rules.fence = (tokens: any, idx: number, options: any, env: any, self: any) => {
     const token = tokens[idx];
     return `<div className="code-block-container"><pre><code>${md.utils.escapeHtml(
       token.content
     )}</code></pre></div>`;
   };
 
-  md.renderer.rules.code_inline = (tokens, idx, options, env, self) => {
+  md.renderer.rules.code_inline = (tokens: any, idx: number, options: any, env: any, self: any) => {
     const token = tokens[idx];
     return `<div className="code-block-container"><code>${md.utils.escapeHtml(
       token.content
@@ -49,7 +49,7 @@ export const MarkdownItProcess = (initialMarkdown: string) => {
       return htmlContent;
     } catch (err) {
       error = err;
-      return useInitMarkdown(initialMarkdown);
+      return InitMarkdown(initialMarkdown);
     } finally {
       // console.timeEnd("Markdown Render Time");
     }
@@ -62,7 +62,7 @@ export const MarkdownItProcess = (initialMarkdown: string) => {
 }
 
 
-const useInitMarkdown = (markdown: string) => {
+const InitMarkdown = (markdown: string) => {
   // 保留超链接的描述文字，去掉链接部分 [text](url)
   markdown = markdown.replace(/\[([^\]]+)\]\(.*?\)/g, "$1");
 

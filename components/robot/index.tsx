@@ -65,59 +65,56 @@ export default function RobotPage() {
 
   const [value, setValue] = useState<string>('');
 
-  // 初始化问候语
-  useEffect(() => {
-    messageManager.current = new TypeWriterManage(
-      18, // 打字机效果速度
-      (message: string) => {
-        updateAssistantMessage(message);
-      },
-      () => {}
-    );
+  messageManager.current = new TypeWriterManage(
+    18, // 打字机效果速度
+    (message: string) => {
+      updateAssistantMessage(message);
+    },
+    () => {}
+  );
 
-    streamFetchApp.current = new StreamFetchClient(
-      {
-        baseUrl: '/api/chat',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        overErrorTimer: 60 * 1000 // 流式中间超时时间，单位为毫秒
+  streamFetchApp.current = new StreamFetchClient(
+    {
+      baseUrl: '/api/chat',
+      headers: {
+        'Content-Type': 'application/json'
       },
-      {
-        onMessage: (data) => {
-          // 解析流式消息
-          if (data && data?.content) {
-            const { content } = data;
-            messageManager.current?.add(content);
-          }
-        },
-        onClose: (lastData: any) => {
-          setStreaming(false);
-          setRequesting(false);
-        },
-        onServerError: (lastData: any) => {
-          console.error('Server error:', lastData);
-          setStreaming(false);
-          setRequesting(false);
-        },
-        onStreamConnectionError: (lastData: any) => {
-          console.error('Stream connection error:', lastData);
-          setStreaming(false);
-          setRequesting(false);
-        },
-        onConnectionError: (lastData: any) => {
-          console.error('Connection error:', lastData);
-          setStreaming(false);
-          setRequesting(false);
-        },
-        onParseError: (lastData: any) => {
-          console.error('Parse error:', lastData);
-          setStreaming(false);
-          setRequesting(false);
+      overErrorTimer: 60 * 1000 // 流式中间超时时间，单位为毫秒
+    },
+    {
+      onMessage: (data) => {
+        // 解析流式消息
+        if (data && data?.content) {
+          const { content } = data;
+          messageManager.current?.add(content);
         }
+      },
+      onClose: (lastData: any) => {
+        setStreaming(false);
+        setRequesting(false);
+      },
+      onServerError: (lastData: any) => {
+        console.error('Server error:', lastData);
+        setStreaming(false);
+        setRequesting(false);
+      },
+      onStreamConnectionError: (lastData: any) => {
+        console.error('Stream connection error:', lastData);
+        setStreaming(false);
+        setRequesting(false);
+      },
+      onConnectionError: (lastData: any) => {
+        console.error('Connection error:', lastData);
+        setStreaming(false);
+        setRequesting(false);
+      },
+      onParseError: (lastData: any) => {
+        console.error('Parse error:', lastData);
+        setStreaming(false);
+        setRequesting(false);
       }
-    );
-  }, []);
+    }
+  );
 
   return (
     <div
