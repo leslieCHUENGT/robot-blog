@@ -4,6 +4,8 @@ import { useFullAIApiStore } from '@/context/app-provider';
 import { StreamFetchClient, TypeWriterManage, generateUniqueId } from '@/lib';
 import { ChatContainer } from './chat-container';
 import { ChatInput } from './chat-input';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 export default function RobotPage() {
   // 提取需要的状态和操作
@@ -58,6 +60,7 @@ export default function RobotPage() {
       model: 'Qwen/QwQ-32B',
       id: assistantMessageId
     });
+    setValue('');
   };
 
   const [value, setValue] = useState<string>('');
@@ -117,7 +120,10 @@ export default function RobotPage() {
   }, []);
 
   return (
-    <div className="border-components-panel-border bg-chatbot-bg relative flex h-300 w-120 flex-col rounded-l-2xl border border-r-0 p-4 shadow-xl">
+    <div
+      className={cn(
+        'no-scrollbar absolute top-30 right-[-500px] z-999 flex h-200 w-120 flex-col rounded-2xl p-4 pt-16 shadow-xl transition-all'
+      )}>
       <ChatContainer messages={messages} />
       <ChatInput
         value={input}

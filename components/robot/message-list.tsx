@@ -22,7 +22,9 @@ export const MessageList = memo(({ messages }: { messages: Message[] }) => {
   // 缓存空状态提示
   const emptyState = useMemo(
     () => (
-      <div className="flex h-full items-center justify-center">您有什么想问我的吗？</div>
+      <div className="flex h-full items-center justify-center text-2xl font-bold">
+        Hi, I'm an AI robot.
+      </div>
     ),
     []
   );
@@ -36,8 +38,14 @@ export const MessageList = memo(({ messages }: { messages: Message[] }) => {
             key={item.id}
             className={`flex ${item.role !== 'user' ? 'justify-start' : 'justify-end'}`}>
             <div
-              className={`rounded bg-gray-200 p-3 ${item.role !== 'user' ? 'mr-auto ml-0' : 'mr-0 ml-auto'}`}>
-              {item.role !== 'user' ? renderMarkdown(item.content) : item.content}
+              className={`rounded bg-gray-200 p-3 ${item.role !== 'user' ? 'mr-auto ml-0 min-h-[48px]' : 'mr-0 ml-auto'}`}>
+              {item.role !== 'user' && !item.content ? (
+                <div>Loading...</div>
+              ) : item.role !== 'user' ? (
+                renderMarkdown(item.content)
+              ) : (
+                item.content
+              )}
             </div>
           </div>
         ))}

@@ -22,10 +22,10 @@ export default async function Home() {
   return (
     <>
       <Header currentPath="/" />
-      {/* <Hero />
+      <Hero />
       <FeaturedPosts posts={featuredPosts} />
-      <CategoryList categories={categories} /> */}
-      <RobotPage />
+      <CategoryList categories={categories} />
+      <RobotPage/>
     </>
   );
 }
