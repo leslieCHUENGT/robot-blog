@@ -1,10 +1,10 @@
-import Header from '@/components/header';
+import Header from '@/components/layout/header';
 import { Popover, PopoverContent } from '@/components/ui/popover';
 import { cn } from '@/lib';
 import { PopoverTrigger } from '@radix-ui/react-popover';
 import { ChevronDown, SearchIcon } from 'lucide-react';
 import Link from 'next/link';
-import ArticleCard from '@/components/post-card';
+import ArticleCard from '@/components/post/post-card';
 import { getPostManager } from '@/lib/docs-manager';
 import { Category, Post } from '@/types';
 import SearchInput from './input';

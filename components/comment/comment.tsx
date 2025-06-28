@@ -1,6 +1,6 @@
 'use client';
 
-import { Twikoo } from '@/components/twikoo';
+import { Twikoo } from '@/components/home/twikoo';
 
 export const Comment = () => {
   return (

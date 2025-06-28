@@ -1,11 +1,11 @@
-import Header from '@/components/header';
+import Header from '@/components/layout/header';
 import { Code } from 'lucide-react';
 import Image from 'next/image';
 import React from 'react';
 import { appConfig, friends } from '@/app-config';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import EmailTemplateBox from './email';
-import { Comment } from '@/components/comment';
+import { Comment } from '@/components/comment/comment';
 
 // 强制页面使用静态生成
 export const dynamic = 'force-static';

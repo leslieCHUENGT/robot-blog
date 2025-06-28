@@ -1,5 +1,5 @@
 import { Post } from '@/types';
-import PostCard from '../post-card';
+import PostCard from '../post/post-card';
 import Link from 'next/link';
 
 interface Props {

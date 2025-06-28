@@ -1,6 +1,6 @@
 import { Category } from '@/types';
 import Link from 'next/link';
-import { Icon, ICON_MAP, IconName } from '../icons';
+import { Icon, ICON_MAP, IconName } from './icons';
 
 const CategoryCard = ({ category }: { category: Category }) => {
   const renderIcon = () => {

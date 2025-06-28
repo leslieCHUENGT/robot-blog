@@ -1,11 +1,32 @@
+import './globals.css';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
-import './globals.css';
 import { initializePostManager } from '@/lib/docs-manager';
 import { appConfig } from '@/app-config';
-import { ThemeSwitcher } from '@/components/theme-switcher';
-import { BackToTop } from '@/components/back-to-top';
+import { ThemeSwitcher } from '@/components/theme/theme-switcher';
+import { BackToTop } from '@/components/layout/back-to-top/back-to-top';
+import { AppStoreProvider } from '@/context/app-provider';
 
+await initializePostManager(appConfig.srcDir);
+
+export default async function RootLayout({
+  children
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="zh-CN" data-theme="pink" suppressHydrationWarning>
+      <head></head>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <AppStoreProvider>
+          {children}
+          <BackToTop />
+          <ThemeSwitcher />
+        </AppStoreProvider>
+      </body>
+    </html>
+  );
+}
 const geistSans = Geist({
   variable: '--font-geist-sans',
   subsets: ['latin']
@@ -67,22 +88,3 @@ export const metadata: Metadata = {
   },
   category: '个人博客'
 };
-
-await initializePostManager(appConfig.srcDir);
-
-export default async function RootLayout({
-  children
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  return (
-    <html lang="zh-CN" data-theme="pink" suppressHydrationWarning>
-      <head></head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        {children}
-        <BackToTop />
-        <ThemeSwitcher />
-      </body>
-    </html>
-  );
-}

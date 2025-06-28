@@ -28,11 +28,6 @@ const themes = [
     name: 'red',
     color: '#ff7878',
     mdTheme: 'ikuyo'
-  },
-  {
-    name: 'dark',
-    color: '#9d4edd',
-    mdTheme: 'dark-night'
   }
 ] as const;
 type Theme = (typeof themes)[number]['name'];

@@ -1,7 +1,7 @@
 import { appConfig } from '@/app-config';
-import { Comment } from '@/components/comment';
-import Header from '@/components/header';
-import { CustomIconNames, CustomIcons } from '@/components/icons';
+import { Comment } from '@/components/comment/comment';
+import Header from '@/components/layout/header';
+import { CustomIconNames, CustomIcons } from '@/components/home/icons';
 import { Popover, PopoverContent } from '@/components/ui/popover';
 import { PopoverTrigger } from '@radix-ui/react-popover';
 import Image from 'next/image';

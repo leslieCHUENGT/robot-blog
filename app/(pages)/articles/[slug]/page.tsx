@@ -1,9 +1,9 @@
 import { appConfig } from '@/app-config';
-import { Comment } from '@/components/comment';
-import ErrorMessage from '@/components/errorMsg';
-import Header from '@/components/header';
-import PostContent from '@/components/post-content';
-import PostTag from '@/components/post-tag';
+import { Comment } from '@/components/comment/comment';
+import ErrorMessage from '@/components/error/errorMsg';
+import Header from '@/components/layout/header';
+import PostContent from '@/components/post/post-content';
+import PostTag from '@/components/post/post-tag';
 import { DEFAULT_COVER_IMAGE } from '@/consts';
 import { cn } from '@/lib';
 import { getPostManager } from '@/lib/docs-manager';

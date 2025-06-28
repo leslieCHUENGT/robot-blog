@@ -1,8 +1,8 @@
-import Header from '@/components/header';
+import Header from '@/components/layout/header';
 import Link from 'next/link';
 import Image from 'next/image';
 import { getPostManager } from '@/lib/docs-manager';
-import { Icon, ICON_MAP, IconName } from '@/components/icons';
+import { Icon, ICON_MAP, IconName } from '@/components/home/icons';
 import { BookOpen } from 'lucide-react';
 import { appConfig } from '@/app-config';
 
