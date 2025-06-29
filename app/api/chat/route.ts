@@ -1,4 +1,3 @@
-// app/api/chat/route.ts
 import { NextResponse } from "next/server";
 import { personalExperiencePrompt } from "@/app-config";
 
@@ -25,6 +24,10 @@ export async function POST(request: Request) {
   ];
 
   try {
+    // 设置请求超时（30秒）
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 60000);
+
     // 调用SiliconFlow API（启用流式返回）
     const response = await fetch(
       "https://api.siliconflow.cn/v1/chat/completions",
@@ -41,8 +44,11 @@ export async function POST(request: Request) {
           temperature: 0.7,
           stream: true, // 启用流式返回
         }),
+        signal: controller.signal, // 关联中止控制器
       }
     );
+
+    clearTimeout(timeoutId); // 清除超时计时器
 
     if (!response.ok) {
       const errorData = await response.json();
@@ -62,67 +68,80 @@ export async function POST(request: Request) {
         }
 
         const decoder = new TextDecoder();
-        let isControllerClosed = false; // 跟踪控制器状态
+        let isControllerClosed = false;
 
         // 监听客户端连接关闭事件
         request.signal.addEventListener('abort', () => {
+          console.log('客户端连接已关闭');
           isControllerClosed = true;
           controller.close();
-          reader.cancel(); // 取消底层读取操作
+          reader.cancel();
         });
 
         // 持续读取API响应流
-        while (true) {
-          // 如果控制器已关闭，停止处理
-          if (isControllerClosed) break;
-
-          const { done, value } = await reader.read();
-
-          if (done || isControllerClosed) {
-            if (!isControllerClosed) {
-              controller.close();
-            }
-            break;
-          }
-
-          // 解码接收到的数据
-          const chunk = decoder.decode(value);
-
-          // 处理SSE格式数据（data: {...}\n\n）
-          const lines = chunk.split("\n").filter((line) => line.trim() !== "");
-
-          for (const line of lines) {
-            // 如果控制器已关闭，停止处理
+        try {
+          while (true) {
             if (isControllerClosed) break;
 
-            if (line.startsWith("data: ")) {
-              const data = line.substring(6);
+            const { done, value } = await reader.read();
 
-              // 特殊数据段表示流结束
-              if (data === "[DONE]") {
+            if (done || isControllerClosed) {
+              if (!isControllerClosed) {
                 controller.close();
-                isControllerClosed = true;
-                return;
               }
+              break;
+            }
 
-              try {
-                const parsed = JSON.parse(data);
-                const content = parsed.choices[0]?.delta?.content || "";
+            // 解码接收到的数据
+            const chunk = decoder.decode(value, { stream: true });
 
-                // 将内容作为SSE格式发送给客户端
-                if (content && !isControllerClosed) {
-                  controller.enqueue(
-                    `data: ${JSON.stringify({ content })}\n\n`
-                  );
+            // 处理SSE格式数据
+            const lines = chunk.split("\n").filter((line) => line.trim() !== "");
+
+            for (const line of lines) {
+              if (isControllerClosed) break;
+
+              if (line.startsWith("data: ")) {
+                const data = line.substring(6);
+
+                if (data === "[DONE]") {
+                  controller.close();
+                  isControllerClosed = true;
+                  return;
                 }
-              } catch (err) {
-                // 如果控制器已关闭，忽略错误
-                if (!isControllerClosed) {
-                  console.error("解析流数据失败:", err);
+
+                try {
+                  const parsed = JSON.parse(data);
+                  const content = parsed.choices[0]?.delta?.content || "";
+
+                  if (content && !isControllerClosed) {
+                    // 确保符合SSE格式
+                    const sseChunk = `data: ${JSON.stringify({ content })}\n\n`;
+                    controller.enqueue(new TextEncoder().encode(sseChunk));
+                  }
+                } catch (err) {
+                  if (!isControllerClosed) {
+                    console.error("解析流数据失败:", err);
+                    // 向前端发送错误信息
+                    controller.enqueue(
+                      new TextEncoder().encode(`data: ${JSON.stringify({ error: "解析数据错误" })}\n\n`)
+                    );
+                  }
                 }
               }
             }
           }
+        } catch (err) {
+          if (!isControllerClosed) {
+            console.error("读取流失败:", err);
+            controller.enqueue(
+              new TextEncoder().encode(`data: ${JSON.stringify({ error: "服务器内部错误" })}\n\n`)
+            );
+            controller.close();
+            isControllerClosed = true;
+          }
+        } finally {
+          reader.releaseLock();
         }
       },
     });
@@ -131,12 +150,22 @@ export async function POST(request: Request) {
     return new Response(stream, {
       headers: {
         "Content-Type": "text/event-stream",
-        "Cache-Control": "no-cache",
-        Connection: "keep-alive",
+        "Cache-Control": "no-cache, no-transform",
+        "Connection": "keep-alive",
+        "Access-Control-Allow-Origin": "*", // 开发环境允许跨域
+        "X-Accel-Buffering": "no", // 禁用Nginx缓冲
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("API调用失败：", error);
+
+    if (error.name === 'AbortError') {
+      return NextResponse.json(
+        { error: "API请求超时，请重试" },
+        { status: 504 }
+      );
+    }
+
     return NextResponse.json(
       { error: "调用AI模型失败，请重试" },
       { status: 500 }
