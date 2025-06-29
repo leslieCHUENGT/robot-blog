@@ -4,7 +4,7 @@ slug: vue-03-diff
 category: 'frontend'
 publishDate: '2023-6-04'
 tags: ['前端', 'Vue']
-coverImage: /icons/vue.svg
+coverImage: /icons/vuejs.svg
 featured: true
 ---
 # 前言

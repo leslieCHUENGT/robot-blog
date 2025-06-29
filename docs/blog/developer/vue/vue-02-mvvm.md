@@ -4,7 +4,7 @@ slug: vue-02-mvvm
 category: 'frontend'
 publishDate: '2023-5-30'
 tags: ['前端', 'Vue']
-coverImage: /icons/vue.svg
+coverImage: /icons/vuejs.svg
 featured: true
 ---
 

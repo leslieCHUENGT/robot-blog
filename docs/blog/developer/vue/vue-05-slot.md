@@ -4,7 +4,7 @@ slug: vue-05-slot
 category: 'frontend'
 publishDate: '2023-7-18'
 tags: ['前端', 'Vue']
-coverImage: /icons/vue.svg
+coverImage: /icons/vuejs.svg
 featured: true
 ---
 
