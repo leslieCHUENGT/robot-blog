@@ -19,7 +19,7 @@ const Hero = () => {
         'flex h-160 flex-col items-center gap-10 py-16 lg:flex-row',
         !isVisible && 'h-80'
       )}>
-      <div className="flex justify-end">
+      {/* <div className="flex justify-end">
         <Image
           src={appConfig.me.avatar}
           width={200}
@@ -27,7 +27,7 @@ const Hero = () => {
           alt="Leslie的秘密基地"
           className="animate-float max-w-60 rounded-3xl"
         />
-      </div>
+      </div> */}
       <div className="flex flex-col items-center justify-center lg:items-start lg:justify-start">
         <h2 className="text-text mb-5 text-3xl font-bold md:text-[2.5rem]">
           {appConfig.greeting.text}{' '}

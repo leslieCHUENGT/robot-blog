@@ -62,13 +62,26 @@ export async function POST(request: Request) {
         }
 
         const decoder = new TextDecoder();
+        let isControllerClosed = false; // 跟踪控制器状态
+
+        // 监听客户端连接关闭事件
+        request.signal.addEventListener('abort', () => {
+          isControllerClosed = true;
+          controller.close();
+          reader.cancel(); // 取消底层读取操作
+        });
 
         // 持续读取API响应流
         while (true) {
+          // 如果控制器已关闭，停止处理
+          if (isControllerClosed) break;
+
           const { done, value } = await reader.read();
 
-          if (done) {
-            controller.close();
+          if (done || isControllerClosed) {
+            if (!isControllerClosed) {
+              controller.close();
+            }
             break;
           }
 
@@ -79,12 +92,16 @@ export async function POST(request: Request) {
           const lines = chunk.split("\n").filter((line) => line.trim() !== "");
 
           for (const line of lines) {
+            // 如果控制器已关闭，停止处理
+            if (isControllerClosed) break;
+
             if (line.startsWith("data: ")) {
               const data = line.substring(6);
 
               // 特殊数据段表示流结束
               if (data === "[DONE]") {
                 controller.close();
+                isControllerClosed = true;
                 return;
               }
 
@@ -93,13 +110,16 @@ export async function POST(request: Request) {
                 const content = parsed.choices[0]?.delta?.content || "";
 
                 // 将内容作为SSE格式发送给客户端
-                if (content) {
+                if (content && !isControllerClosed) {
                   controller.enqueue(
                     `data: ${JSON.stringify({ content })}\n\n`
                   );
                 }
               } catch (err) {
-                console.error("解析流数据失败:", err);
+                // 如果控制器已关闭，忽略错误
+                if (!isControllerClosed) {
+                  console.error("解析流数据失败:", err);
+                }
               }
             }
           }

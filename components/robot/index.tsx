@@ -1,6 +1,7 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { useFullAIApiStore } from '@/context/app-provider';
+import { MessageRole } from '@/context/app-store';
 import { StreamFetchClient, TypeWriterManage, generateUniqueId } from '@/lib';
 import { ChatContainer } from './chat-container';
 import { ChatInput } from './chat-input';
@@ -13,117 +14,140 @@ export default function RobotPage() {
   // 提取需要的状态和操作
   const {
     messages,
-    input,
-    isRequesting,
+    isResponsing,
     isVisible,
-    setInput,
+    isFetchInterface,
     addMessage,
     updateAssistantMessage,
-    setRequesting,
-    setVisible
+    setResponsing,
+    setVisible,
+    setFetchInterface,
+    updateAssistantStatus
   } = useFullAIApiStore();
 
-  const messageManager = useRef<TypeWriterManage>(null);
-  const streamFetchApp = useRef<StreamFetchClient | null>(null);
+  const [input, setInput] = useState('');
+
+  // 使用 useRef 创建打字机管理器实例
+  const messageManager = useRef<TypeWriterManage>(
+    new TypeWriterManage(
+      18, // 打字机效果速度
+      (message: string) => {
+        updateAssistantMessage(message);
+      },
+      () => {}
+    )
+  );
+
+  // 处理请求完成（成功或失败）
+  const handleRequestCompletion = useCallback(() => {
+    setResponsing(false);
+    setFetchInterface(false);
+  }, [setResponsing, setFetchInterface]);
 
   // 处理发送消息
-  const handleSend = () => {
+  const handleSend = useCallback(() => {
+    // 防止重复请求
+    if (isFetchInterface) return;
+
     const content = input.trim();
-    if (!content || isRequesting) return;
+    if (!content) return;
 
     // 创建用户消息
-    const userMessageId = generateUniqueId();
     const userMessage = {
-      id: userMessageId,
-      role: 'user',
+      id: generateUniqueId(),
+      role: MessageRole.User,
       content
     };
 
-    // 添加用户消息到状态
-    addMessage(userMessage as any);
-    setInput('');
-
     // 创建AI回复消息（加载中状态）
-    const assistantMessageId = generateUniqueId();
     const assistantMessage = {
-      id: assistantMessageId,
-      role: 'assistant',
+      id: generateUniqueId(),
+      role: MessageRole.Assistant,
       content: ''
     };
 
-    // 添加AI消息到状态
-    addMessage(assistantMessage as any);
-    setRequesting(true);
-    setVisible(true);
+    // 合并状态更新，减少重新渲染
+    setFetchInterface(true);
+    addMessage(userMessage);
+    addMessage(assistantMessage);
+    setInput('');
 
     // 发送请求
     streamFetchApp.current?.sendStreamRequest({
       question: content,
-      model: 'Qwen/QwQ-32B',
-      id: assistantMessageId
+      model: 'Qwen/QwQ-32B'
     });
-    setValue('');
-  };
+  }, [isFetchInterface, input, addMessage, setFetchInterface, setInput]);
 
-  const [value, setValue] = useState<string>('');
+  // 处理停止响应
+  const handleStop = useCallback(() => {
+    streamFetchApp.current?.disconnect(); // 中止请求
 
-  messageManager.current = new TypeWriterManage(
-    18, // 打字机效果速度
-    (message: string) => {
-      updateAssistantMessage(message);
-    },
-    () => {}
-  );
-
-  streamFetchApp.current = new StreamFetchClient(
-    {
-      baseUrl: '/api/chat',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      overErrorTimer: 60 * 1000 // 流式中间超时时间，单位为毫秒
-    },
-    {
-      onMessage: (data) => {
-        // 解析流式消息
-        if (data && data?.content) {
-          const { content } = data;
-          messageManager.current?.add(content);
-        }
-      },
-      onClose: (lastData: any) => {
-        setVisible(false);
-        setRequesting(false);
-      },
-      onServerError: (lastData: any) => {
-        console.error('Server error:', lastData);
-        setVisible(false);
-        setRequesting(false);
-      },
-      onStreamConnectionError: (lastData: any) => {
-        console.error('Stream connection error:', lastData);
-        setVisible(false);
-        setRequesting(false);
-      },
-      onConnectionError: (lastData: any) => {
-        console.error('Connection error:', lastData);
-        setVisible(false);
-        setRequesting(false);
-      },
-      onParseError: (lastData: any) => {
-        console.error('Parse error:', lastData);
-        setVisible(false);
-        setRequesting(false);
-      }
+    // 已经响应了
+    if (isResponsing) {
+      setResponsing(false);
+      updateAssistantStatus({ isStreamStop: true, isFastStop: false, isError: false });
+    } else if (!isResponsing) {
+      // 未响应
+      updateAssistantStatus({ isFastStop: true, isStreamStop: false, isError: false });
     }
+
+    setFetchInterface(false);
+    messageManager.current?.immediatelyStop();
+  }, [isResponsing, setResponsing, setFetchInterface, updateAssistantStatus]);
+
+  // 使用 useRef 创建流请求客户端实例
+  const streamFetchApp = useRef<StreamFetchClient>(
+    new StreamFetchClient(
+      {
+        baseUrl: '/api/chat',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        overErrorTimer: 60 * 1000 // 流式中间超时时间，单位为毫秒
+      },
+      {
+        onMessage: (data) => {
+          // 正在响应
+          if (!isResponsing) {
+            setResponsing(true);
+            setFetchInterface(true);
+          }
+
+          // 解析流式消息
+          if (data && data?.content) {
+            const { content } = data;
+            messageManager.current?.add(content);
+          }
+        },
+        onClose: handleRequestCompletion,
+        onServerError: handleRequestCompletion,
+        onStreamConnectionError: handleRequestCompletion,
+        onConnectionError: handleRequestCompletion,
+        onParseError: handleRequestCompletion
+      }
+    )
   );
+
+  const memoizedMessages = useMemo(() => {
+    console.log('messages', messages);
+    return messages;
+  }, [messages]);
+
+  // 组件卸载时清理资源
+  useEffect(() => {
+    return () => {
+      streamFetchApp.current?.disconnect();
+      messageManager.current?.immediatelyStop();
+    };
+  }, []);
 
   return isVisible ? (
     <div
       className={cn(
-        'no-scrollbar shadow-card absolute top-24 right-0 z-2 flex h-180 w-120 flex-col rounded-2xl p-4 pt-20 transition-all'
+        'no-scrollbar shadow-card absolute top-30 right-0 z-2 flex h-160 w-200 flex-col rounded-2xl p-4 pt-20 transition-all'
       )}>
-      <div className="absolute top-4 flex w-112 items-center justify-between">
+      <div className="absolute top-4 flex w-192 items-center justify-between">
         <Image src="/icons/ai-logo.svg" alt="logo" width={30} height={30}></Image>{' '}
         <Button
           size="icon"
@@ -134,15 +158,15 @@ export default function RobotPage() {
         </Button>
       </div>
 
-      <ChatContainer messages={messages} />
+      <ChatContainer messages={memoizedMessages} />
       <ChatInput
         value={input}
         onChange={(v: string) => {
-          setValue(v);
           setInput(v);
         }}
         onSubmit={handleSend}
-        loading={isRequesting}
+        onStop={handleStop}
+        loading={isFetchInterface}
       />
     </div>
   ) : (

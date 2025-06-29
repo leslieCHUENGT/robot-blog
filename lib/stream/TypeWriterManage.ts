@@ -1,11 +1,11 @@
 export class TypeWriterManage {
-  private messageQueue: string[];
-  private delay: number;
-  private onMessage: (char: string) => void;
-  private onFinish: () => void;
-  private isProcessing: boolean;
-  private stopFlag: boolean;
-  private timeoutId: ReturnType<typeof setTimeout> | null;
+  private messageQueue: string[]; // 字符队列
+  private delay: number; // 字符间隔时间
+  private onMessage: (char: string) => void; // 单字回调
+  private onFinish: () => void; // 完成回调
+  private isProcessing: boolean; // 处理状态
+  private stopFlag: boolean; // 停止标志
+  private timeoutId: any; // 定时器ID
 
   constructor(
     delay: number,
@@ -13,13 +13,13 @@ export class TypeWriterManage {
     onFinish: () => void,
     initialValue: string = ""
   ) {
-    this.messageQueue = []; // 字符队列
-    this.delay = delay; // 字符间隔时间
-    this.onMessage = onMessage; // 单字回调
-    this.onFinish = onFinish; // 完成回调
-    this.isProcessing = false; // 处理状态
-    this.stopFlag = false; // 停止标志
-    this.timeoutId = null; // 定时器ID
+    this.messageQueue = [];
+    this.delay = delay;
+    this.onMessage = onMessage;
+    this.onFinish = onFinish;
+    this.isProcessing = false;
+    this.stopFlag = false;
+    this.timeoutId = null;
 
     // 初始化时直接添加初始值
     if (initialValue) {
@@ -40,10 +40,6 @@ export class TypeWriterManage {
     }
   }
 
-  setOnComplete(callback: () => void): void {
-    this.onFinish = callback;
-  }
-
   start(): void {
     this.processQueue();
   }
@@ -51,12 +47,12 @@ export class TypeWriterManage {
   processQueue(): void {
     if (this.stopFlag || this.messageQueue.length === 0) {
       this.isProcessing = false;
-      if (this.messageQueue.length === 0) this.onFinish();
+      if (this.messageQueue.length === 0) this?.onFinish();
       return;
     }
 
     this.isProcessing = true;
-    const char = this.messageQueue.shift() as string;
+    const char = this.messageQueue.shift()!;
     this.onMessage(char);
 
     this.timeoutId = setTimeout(() => {
@@ -69,10 +65,11 @@ export class TypeWriterManage {
   }
 
   immediatelyStop(): void {
-    clearTimeout(this.timeoutId as ReturnType<typeof setTimeout>);
+    if (this.timeoutId !== null) {
+      clearTimeout(this.timeoutId);
+    }
     this.messageQueue = [];
     this.isProcessing = false;
     this.stopFlag = false;
-    this.onFinish();
   }
 }
