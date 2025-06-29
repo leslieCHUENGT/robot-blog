@@ -44,10 +44,11 @@ const Header = ({ currentPath }: Props) => {
               </h1>
             </Link>
             <nav className="items-center md:flex">
-              <button className="mobile-menu-toggle">
-                <span></span>
-                <span></span>
-                <span></span>
+              <button 
+                className="mobile-menu-toggle"
+                aria-label="Toggle mobile menu"
+                title="Toggle mobile menu"
+              >
               </button>
               <ul className="flex gap-5">
                 {appConfig.navList.map((item) => (
