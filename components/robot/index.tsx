@@ -136,9 +136,11 @@ export default function RobotPage() {
 
   // 组件卸载时清理资源
   useEffect(() => {
+    const currentStreamFetchApp = streamFetchApp.current;
+    const currentMessageManager = messageManager.current;
     return () => {
-      streamFetchApp.current?.disconnect();
-      messageManager.current?.immediatelyStop();
+      currentStreamFetchApp?.disconnect();
+      currentMessageManager?.immediatelyStop();
     };
   }, []);
 

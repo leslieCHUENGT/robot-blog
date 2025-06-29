@@ -25,6 +25,7 @@ const AssistantMessage: FC<{
   isError: boolean;
 }> = React.memo(({ content, isStreamStop, isFastStop, isError }) => {
   console.log('助手消息', content);
+  AssistantMessage.displayName = 'AssistantMessage';
 
   if (isFastStop) {
     return <div>已停止生成</div>;
@@ -54,6 +55,7 @@ const AssistantMessage: FC<{
 // 用户消息渲染组件
 const UserMessage: FC<{ content: string }> = React.memo(({ content }) => {
   console.log('用户消息', content);
+  UserMessage.displayName = 'UserMessage';
   return content;
 });
 

@@ -40,7 +40,11 @@ export const ChatInput = ({
         <Button
           type="button"
           onClick={() => {
-            !loading ? onSubmit() : onStop();
+            if (!loading) {
+              onSubmit();
+            } else {
+              onStop();
+            }
           }}
           className="w-full rounded px-4 py-2 text-white">
           {loading ? '回答中...可点击暂停' : '发送'}
