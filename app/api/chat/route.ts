@@ -25,7 +25,7 @@ export async function POST(request: Request) {
 
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 30000);
+    const timeoutId = setTimeout(() => controller.abort(), 60000);
 
     const response = await fetch(
       "https://api.siliconflow.cn/v1/chat/completions",
