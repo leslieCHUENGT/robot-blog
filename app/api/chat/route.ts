@@ -24,11 +24,9 @@ export async function POST(request: Request) {
   ];
 
   try {
-    // 设置请求超时（30秒）
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 60000);
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
 
-    // 调用SiliconFlow API（启用流式返回）
     const response = await fetch(
       "https://api.siliconflow.cn/v1/chat/completions",
       {
@@ -42,13 +40,13 @@ export async function POST(request: Request) {
           messages,
           max_tokens: 1024,
           temperature: 0.7,
-          stream: true, // 启用流式返回
+          stream: true,
         }),
-        signal: controller.signal, // 关联中止控制器
+        signal: controller.signal,
       }
     );
 
-    clearTimeout(timeoutId); // 清除超时计时器
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       const errorData = await response.json();
@@ -69,6 +67,7 @@ export async function POST(request: Request) {
 
         const decoder = new TextDecoder();
         let isControllerClosed = false;
+        let accumulatedData = ''; // 用于累积不完整的JSON块
 
         // 监听客户端连接关闭事件
         request.signal.addEventListener('abort', () => {
@@ -78,7 +77,6 @@ export async function POST(request: Request) {
           reader.cancel();
         });
 
-        // 持续读取API响应流
         try {
           while (true) {
             if (isControllerClosed) break;
@@ -94,12 +92,17 @@ export async function POST(request: Request) {
 
             // 解码接收到的数据
             const chunk = decoder.decode(value, { stream: true });
+            accumulatedData += chunk;
 
             // 处理SSE格式数据
-            const lines = chunk.split("\n").filter((line) => line.trim() !== "");
+            const lines = accumulatedData.split("\n");
+
+            // 最后一行可能是不完整的，保留到下一次处理
+            accumulatedData = lines.pop() || '';
 
             for (const line of lines) {
               if (isControllerClosed) break;
+              if (!line.trim()) continue; // 跳过空行
 
               if (line.startsWith("data: ")) {
                 const data = line.substring(6);
@@ -111,18 +114,20 @@ export async function POST(request: Request) {
                 }
 
                 try {
+                  // 尝试解析JSON
                   const parsed = JSON.parse(data);
                   const content = parsed.choices[0]?.delta?.content || "";
 
                   if (content && !isControllerClosed) {
-                    // 确保符合SSE格式
                     const sseChunk = `data: ${JSON.stringify({ content })}\n\n`;
                     controller.enqueue(new TextEncoder().encode(sseChunk));
                   }
-                } catch (err) {
+                } catch (err: any) {
                   if (!isControllerClosed) {
-                    console.error("解析流数据失败:", err);
-                    // 向前端发送错误信息
+                    console.error("解析流数据失败:", err.message);
+                    console.error("原始数据:", data); // 打印原始数据用于调试
+
+                    // 发送错误信息给客户端
                     controller.enqueue(
                       new TextEncoder().encode(`data: ${JSON.stringify({ error: "解析数据错误" })}\n\n`)
                     );
@@ -146,14 +151,13 @@ export async function POST(request: Request) {
       },
     });
 
-    // 返回SSE响应
     return new Response(stream, {
       headers: {
         "Content-Type": "text/event-stream",
         "Cache-Control": "no-cache, no-transform",
         "Connection": "keep-alive",
-        "Access-Control-Allow-Origin": "*", // 开发环境允许跨域
-        "X-Accel-Buffering": "no", // 禁用Nginx缓冲
+        "Access-Control-Allow-Origin": "*",
+        "X-Accel-Buffering": "no",
       },
     });
   } catch (error: any) {
