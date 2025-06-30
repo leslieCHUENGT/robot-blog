@@ -96,6 +96,27 @@ export default function RobotPage() {
     messageManager.current?.immediatelyStop();
   };
 
+  const handleRequestMessage = (data: any) => {
+    // 正在响应
+    if (!isResponsing) {
+      setResponsing(true);
+      setFetchInterface(true);
+    }
+
+    if (data && data?.done) {
+      // 流式结束
+      messageManager.current.setOnComplete(() => {
+        handleRequestCompletion();
+      });
+      return;
+    }
+
+    if (data && data?.content) {
+      const { content } = data;
+      messageManager.current?.add(content);
+    }
+  };
+
   // 使用 useRef 创建流请求客户端实例
   const streamFetchApp = useRef<StreamFetchClient>(
     new StreamFetchClient(
@@ -107,20 +128,8 @@ export default function RobotPage() {
         overErrorTimer: 60 * 1000 // 流式中间超时时间，单位为毫秒
       },
       {
-        onMessage: (data) => {
-          // 正在响应
-          if (!isResponsing) {
-            setResponsing(true);
-            setFetchInterface(true);
-          }
-
-          // 解析流式消息
-          if (data && data?.content) {
-            const { content } = data;
-            messageManager.current?.add(content);
-          }
-        },
-        onClose: handleRequestCompletion,
+        onMessage: handleRequestMessage,
+        onClose: () => {},
         onServerError: handleRequestCompletion,
         onStreamConnectionError: handleRequestCompletion,
         onConnectionError: handleRequestCompletion,

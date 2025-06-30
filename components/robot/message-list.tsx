@@ -24,7 +24,6 @@ const AssistantMessage: FC<{
   isFastStop: boolean;
   isError: boolean;
 }> = React.memo(({ content, isStreamStop, isFastStop, isError }) => {
-  console.log('助手消息', content);
   AssistantMessage.displayName = 'AssistantMessage';
 
   if (isFastStop) {
@@ -54,7 +53,6 @@ const AssistantMessage: FC<{
 
 // 用户消息渲染组件
 const UserMessage: FC<{ content: string }> = React.memo(({ content }) => {
-  console.log('用户消息', content);
   UserMessage.displayName = 'UserMessage';
   return content;
 });
@@ -81,6 +79,7 @@ const MessageItem: FC<{ message: Message }> = ({ message }) => {
 
 // 消息列表组件
 export const MessageList: FC<{ messages: Message[] }> = ({ messages }) => {
+  console.log('messages', messages);
   if (messages.length === 0) {
     return (
       <div className="flex h-full items-center justify-center text-2xl font-bold">

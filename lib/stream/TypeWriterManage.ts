@@ -11,7 +11,7 @@ export class TypeWriterManage {
     delay: number,
     onMessage: (char: string) => void,
     onFinish: () => void,
-    initialValue: string = ""
+    initialValue: string = ''
   ) {
     this.messageQueue = [];
     this.delay = delay;
@@ -28,10 +28,10 @@ export class TypeWriterManage {
   }
 
   add(chunk: string): void {
-    if (typeof chunk !== "string" || this.stopFlag) return;
+    if (typeof chunk !== 'string' || this.stopFlag) return;
 
     // 拆解数据块为单字并加入队列
-    const chars = chunk.split("");
+    const chars = chunk.split('');
     this.messageQueue.push(...chars);
 
     // 自动启动处理流程
@@ -71,5 +71,10 @@ export class TypeWriterManage {
     this.messageQueue = [];
     this.isProcessing = false;
     this.stopFlag = false;
+  }
+  // 设置回调函数
+  public setOnComplete(callback: () => void) {
+    this.onFinish = callback;
+    if (this.messageQueue.length === 0) this.onFinish();
   }
 }
