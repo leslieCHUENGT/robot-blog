@@ -42,10 +42,10 @@ export default function RobotPage() {
   const handleRequestCompletion = useCallback(() => {
     setResponsing(false);
     setFetchInterface(false);
-  }, [setResponsing, setFetchInterface]);
+  }, []);
 
   // 处理发送消息
-  const handleSend = useCallback(() => {
+  const handleSend = () => {
     // 防止重复请求
     if (isFetchInterface) return;
 
@@ -77,10 +77,10 @@ export default function RobotPage() {
       question: content,
       model: 'Qwen/QwQ-32B'
     });
-  }, [isFetchInterface, input, addMessage, setFetchInterface, setInput]);
+  };
 
   // 处理停止响应
-  const handleStop = useCallback(() => {
+  const handleStop = () => {
     streamFetchApp.current?.disconnect(); // 中止请求
 
     // 已经响应了
@@ -94,7 +94,7 @@ export default function RobotPage() {
 
     setFetchInterface(false);
     messageManager.current?.immediatelyStop();
-  }, [isResponsing, setResponsing, setFetchInterface, updateAssistantStatus]);
+  };
 
   // 使用 useRef 创建流请求客户端实例
   const streamFetchApp = useRef<StreamFetchClient>(
@@ -129,11 +129,6 @@ export default function RobotPage() {
     )
   );
 
-  const memoizedMessages = useMemo(() => {
-    console.log('messages', messages);
-    return messages;
-  }, [messages]);
-
   // 组件卸载时清理资源
   useEffect(() => {
     const currentStreamFetchApp = streamFetchApp.current;
@@ -160,7 +155,7 @@ export default function RobotPage() {
         </Button>
       </div>
 
-      <ChatContainer messages={memoizedMessages} />
+      <ChatContainer messages={messages} />
       <ChatInput
         value={input}
         onChange={(v: string) => {

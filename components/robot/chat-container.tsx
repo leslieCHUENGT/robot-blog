@@ -9,17 +9,15 @@ interface ChatContainerProps {
 export const ChatContainer = ({ messages }: ChatContainerProps) => {
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
-  // 滚动到聊天底部
-  const scrollToBottom = () => {
-    if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
-    }
-  };
-
-  // 监听消息变化，滚动到底部
   useEffect(() => {
-    console.log('scrollToBottom');
-    scrollToBottom();
+    const scroll = () => {
+      if (chatContainerRef.current) {
+        chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+      }
+    };
+
+    const rafId = requestAnimationFrame(scroll);
+    return () => cancelAnimationFrame(rafId);
   }, [messages]);
 
   return (

@@ -1,6 +1,6 @@
 'use client';
 import React, { FC } from 'react';
-import { renderMarkdown } from './markdown-renderer';
+import renderMarkdown from './markdown-renderer';
 import type { Message } from '@/context/app-store';
 
 // 消息组件样式配置
